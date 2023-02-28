@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        docker { image '014936247795.dkr.ecr.us-east-1.amazonaws.com/digite/ec2-by-terraform:0.1'
+        docker { image 'ec2-by-terraform:0.1'
                     label 'master'
                     args '-v /var/run/docker.sock:/var/run/docker.sock -u root -e "TZ=Asia/Kolkata"'
 					args  '--entrypoint="" -u root'	
@@ -15,8 +15,8 @@ pipeline {
 		stage('GitCheckout') {
 			steps{
 				sh "cd /data/terraform/devops && git fetch"
-				sh "cd /data/terraform/devops && git config --global user.name 'codestar'"
-				sh "cd /data/terraform/devops && git config --global user.email 'git_auto@digite.com'"
+				sh "cd /data/terraform/devops && git config --global user.name 'xyz'"
+				sh "cd /data/terraform/devops && git config --global user.email 'xyz@xyz.com'"
 				sh "cd /data/terraform/devops && git stash -a"
 				sh "cd /data/terraform/devops && git pull origin master"
 			}
@@ -25,7 +25,7 @@ pipeline {
 		stage('Init') {
 			steps {				
 					withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'AWS-SK', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-                    sh "cd /data/terraform/devops/swiftenterprise/terraform/${params.PRODUCT}/ && terraform init -backend-config='s3.tfvars'"
+                    sh "cd /path/of/tf/files/ && terraform init -backend-config='s3.tfvars'"
                 }
 			}
 		}
@@ -33,7 +33,7 @@ pipeline {
 		stage('Plan') {
 		  steps {			
 					withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'AWS-SK', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-                    sh "cd /data/terraform/devops/swiftenterprise/terraform/${params.PRODUCT}/ && terraform plan -var-file config.tfvars -lock=false"
+                    sh "cd /path/of/tf/files/ && terraform plan -var-file config.tfvars -lock=false"
                 }
 		  }
 		}
@@ -41,7 +41,7 @@ pipeline {
 		stage('Apply') {
 		  steps {			
 					withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'AWS-SK', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-                    sh "cd /data/terraform/devops/swiftenterprise/terraform/${params.PRODUCT}/ && terraform apply -var-file config.tfvars -lock=false --auto-approve"
+                    sh "cd /path/of/tf/files/ & && terraform apply -var-file config.tfvars -lock=false --auto-approve"
                 }
 		  }
 		}		
